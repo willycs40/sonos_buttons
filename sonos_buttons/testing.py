@@ -15,13 +15,7 @@ BTN_6 = button_set.add('Button 6', 29)
 
 def get_pressed_buttons():
 
-    pressed_buttons = 0
-
-    for button in button_set:
-        if gpio_test_pin(button.pin_number):
-            pressed_buttons += button
-
-    return pressed_buttons
+    return sum([button.mask for button in button_set if gpio_test_pin(button.pin_number)])
 
 def gpio_test_pin(pin_number):
     #raise NotImplementedError("Nick to implement this")
