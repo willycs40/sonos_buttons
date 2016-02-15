@@ -1,3 +1,5 @@
+import parameters as params
+
 class ButtonList(list):
 
     def __init__(self):
@@ -43,7 +45,7 @@ class ButtonEvent():
         self.buttons = buttons
         self.duration = duration
 
-    def long_press(self):
+    def is_long_press(self):
         if self.duration > params.LONG_PRESS_DURATION:
             return True
         else:

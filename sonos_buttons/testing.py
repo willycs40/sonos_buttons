@@ -1,5 +1,6 @@
 from buttons import *
 import parameters as params
+from sonosmemorycontroller import SonosMemoryController
 import logging
 import time
 
@@ -14,13 +15,15 @@ BTN_4 = buttons.add('Button 4', 21)
 BTN_5 = buttons.add('Button 5', 24)
 BTN_6 = buttons.add('Button 6', 29)
 
+smc = SonosMemoryController()
+
 def get_pressed_buttons():
 
     return sum([button.mask for button in buttons if gpio_test_pin(button.pin_number)])
 
 def gpio_test_pin(pin_number):
     #raise NotImplementedError("Nick to implement this")
-    if pin_number in [17, 21]:
+    if pin_number in [17]:
         return True
     else:
         return False
@@ -41,7 +44,6 @@ def get_button_event():
             elif initial_buttons < current_buttons:
                 # more buttons pressed, so start again
                 return get_button_event()
-
             duration = time.time() - start_time
             if duration > params.MAX_PRESS_DURATION:
                 # max duration exceeded, so return the event
@@ -59,8 +61,19 @@ def trigger_action(button_event):
     # sets of buttons. This will do bitwise matching against the buttons'
     # mask values.
 
+    # self.current_worker.stop()
+    # self.current_worker.
+
+    smc.cancel_running_thread()
+
     if button_event.buttons == BTN_3:
         print('Button 3 pressed for {} seconds'.format(button_event.duration))
+        
+        if button_event.is_long_press():
+            smc.save_playlist('Beach')
+        else:
+            smc.load_playlist_threaded('Beach')
+
     elif button_event.buttons == BTN_4 + BTN_6:
         print('Buttons 4 and 6 pressed for {} seconds'.format(button_event.duration))
     else:
@@ -86,4 +99,10 @@ def monitor_buttons():
                 pass
 
 if __name__=='__main__':
+
+    logging.basicConfig(
+        format='%(asctime)s|%(levelname)s|%(message)s',
+        datefmt='%m/%d/%Y %I:%M:%S',
+        level=logging.INFO)
+
     monitor_buttons()
