@@ -1,4 +1,4 @@
-class Buttons(list):
+class ButtonList(list):
 
     def __init__(self):
         pass
@@ -48,3 +48,6 @@ class ButtonEvent():
             return True
         else:
             return False
+
+    def is_button_pressed(self, button):
+        return bool(self.buttons & button.mask)

@@ -5,21 +5,22 @@ import time
 
 # Set up the buttons. Make a button set and add buttons,
 # retaining handles to each one, for use later.
-button_set = Buttons()
-BTN_1 = button_set.add('Button 1', 7)
-BTN_2 = button_set.add('Button 2', 13)
-BTN_3 = button_set.add('Button 3', 17)
-BTN_4 = button_set.add('Button 4', 21)
-BTN_5 = button_set.add('Button 5', 24)
-BTN_6 = button_set.add('Button 6', 29)
+buttons = ButtonList()
+
+BTN_1 = buttons.add('Button 1', 7)
+BTN_2 = buttons.add('Button 2', 13)
+BTN_3 = buttons.add('Button 3', 17)
+BTN_4 = buttons.add('Button 4', 21)
+BTN_5 = buttons.add('Button 5', 24)
+BTN_6 = buttons.add('Button 6', 29)
 
 def get_pressed_buttons():
 
-    return sum([button.mask for button in button_set if gpio_test_pin(button.pin_number)])
+    return sum([button.mask for button in buttons if gpio_test_pin(button.pin_number)])
 
 def gpio_test_pin(pin_number):
     #raise NotImplementedError("Nick to implement this")
-    if pin_number == 17:
+    if pin_number in [17, 21]:
         return True
     else:
         return False
@@ -32,7 +33,6 @@ def monitor_buttons():
         if button_event:
 
             logging.info("Button press detected. Buttons: {}. Duration: {}.".format(button_event.buttons, button_event.duration))
-            print("hello")
 
             trigger_action(button_event)
 
@@ -79,6 +79,10 @@ def trigger_action(button_event):
         print('Button 3 pressed for {} seconds'.format(button_event.duration))
     elif button_event.buttons == BTN_4 + BTN_6:
         print('Buttons 4 and 6 pressed for {} seconds'.format(button_event.duration))
+    else:
+        print('Unknown button combination held for {} seconds.'.format(button_event.duration))
+        for button in buttons:
+            print('Button: {}. Pressed: {}.'.format(button.name, button_event.is_button_pressed(button)))
 
 if __name__=='__main__':
     monitor_buttons()
