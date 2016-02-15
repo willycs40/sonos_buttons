@@ -38,7 +38,8 @@ def monitor_buttons():
 
             trigger_action(button_event)
 
-            # don't resume looping until all buttons are released
+            # don't resume looping until all 
+            # buttons are released
             while get_pressed_buttons():
                 pass
 
@@ -49,27 +50,24 @@ def get_button_event():
 
         start_time = time.time()
 
-         while duration < params.MAX_PRESS_DURATION:
-            duration = time.time() - start_time
+         while True:
+
             current_buttons = get_pressed_buttons()
             if initial_buttons > current_buttons:
+                # buttons were released, so return the event
                 return ButtonEvent(initial_buttons, duration)
             elif initial_buttons < current_buttons:
+                # more buttons pressed, so start again
                 return get_button_event()
 
-        # If we pressed more buttons, simply 
-        # restart with the new pressed_buttons
-        if (pressed_buttons>current_buttons):
-            return buttons.ButtonEvent(pressed_buttons, duration)
-        
-        return ButtonEvent(pressed_buttons, duration)
+            duration = time.time() - start_time
+            if duration > params.MAX_PRESS_DURATION:
+                # max duration exceeded, so return the event
+                return ButtonEvent(initial_buttons, duration)
 
     else:
 
         return None
-
-
-
 
 def trigger_action(button_event):
 
