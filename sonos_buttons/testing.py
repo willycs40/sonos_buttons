@@ -1,5 +1,6 @@
 from buttons import *
 import parameters as params
+import logging
 import time
 
 # Set up the buttons. Make a button set and add buttons,
@@ -36,12 +37,16 @@ def monitor_buttons():
         button_event = get_button_event()
         if button_event:
 
+            logging.info("Button press detected. Buttons: {}. Duration: {}.".format(button_event.buttons, button_event.duration))
+            print("hello")
+
             trigger_action(button_event)
 
             # don't resume looping until all 
             # buttons are released
             while get_pressed_buttons():
                 pass
+
 
 def get_button_event():
 
@@ -50,7 +55,7 @@ def get_button_event():
 
         start_time = time.time()
 
-         while True:
+        while True:
 
             current_buttons = get_pressed_buttons()
             if initial_buttons > current_buttons:
@@ -77,10 +82,9 @@ def trigger_action(button_event):
     # mask values.
 
     if button_event.buttons == BTN_3:
-        print('Button 3 pressed for {} seconds'.format(duration))
+        print('Button 3 pressed for {} seconds'.format(button_event.duration))
     elif button_event.buttons == BTN_4 + BTN_6:
-        print('Buttons 4 and 6 pressed for {} seconds'.format(duration))
+        print('Buttons 4 and 6 pressed for {} seconds'.format(button_event.duration))
 
-def main():
+if __name__=='__main__':
     monitor_buttons()
-
