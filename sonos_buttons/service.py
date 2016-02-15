@@ -18,7 +18,8 @@ if __name__ == '__main__':
     smc = SonosMemoryController()
 
     #smc.pause()
-    smc.set_station('test')
+    #smc.save_playlist('test')
+    smc.load_playlist('test')
     #smc.play()
 
 

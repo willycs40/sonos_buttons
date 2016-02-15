@@ -25,23 +25,6 @@ def gpio_test_pin(pin_number):
     else:
         return False
 
-def monitor_buttons():
-
-    while True:
-
-        button_event = get_button_event()
-        if button_event:
-
-            logging.info("Button press detected. Buttons: {}. Duration: {}.".format(button_event.buttons, button_event.duration))
-
-            trigger_action(button_event)
-
-            # don't resume looping until all 
-            # buttons are released
-            while get_pressed_buttons():
-                pass
-
-
 def get_button_event():
 
     initial_buttons = get_pressed_buttons()
@@ -68,6 +51,7 @@ def get_button_event():
 
         return None
 
+
 def trigger_action(button_event):
 
     # This is why we kept handles to the buttons earlier.
@@ -83,6 +67,23 @@ def trigger_action(button_event):
         print('Unknown button combination held for {} seconds.'.format(button_event.duration))
         for button in buttons:
             print('Button: {}. Pressed: {}.'.format(button.name, button_event.is_button_pressed(button)))
+
+
+def monitor_buttons():
+
+    while True:
+
+        button_event = get_button_event()
+        if button_event:
+
+            logging.info("Button press detected.")
+
+            trigger_action(button_event)
+
+            # don't resume looping until all 
+            # buttons are released
+            while get_pressed_buttons():
+                pass
 
 if __name__=='__main__':
     monitor_buttons()

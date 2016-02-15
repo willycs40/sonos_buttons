@@ -6,7 +6,7 @@ import json
 class SonosMemoryController:
 
     def __init__(self):
-        self.load_stations()
+        self.read_playlists()
         self.connect()
 
     def connect(self):
@@ -18,47 +18,45 @@ class SonosMemoryController:
     def pause(self):
         self.sonos.pause()
 
-    def load_stations(self):
+    def read_playlists(self):
         try:
-            with open(params.STATIONS_FILENAME, 'r') as f:
-                self.stations = json.load(f)    
+            with open(params.PLAYLISTS_FILENAME, 'r') as f:
+                self.playlists = json.load(f)    
         except:
-            self.stations = {}
+            self.playlists = {}
 
-    def save_stations(self):
-        with open(params.STATIONS_FILENAME, 'w') as f:
-            json.dump(self.stations, f)
+    def write_playlists(self):
+        with open(params.PLAYLISTS_FILENAME, 'w') as f:
+            json.dump(self.playlists, f)
 
-    def set_station(self, station_name):
+    def save_playlist(self, playlist_name):
 
         queue = self.sonos.get_queue(max_items=250)
         
         tracks = []
         if queue is not None:            
             for track in queue:
-                tracks.append(track.to_dict())
+                tracks.append(track.resources[0].uri)
 
-        self.stations[station_name] = tracks
+        self.playlists[playlist_name] = tracks
 
-        self.save_stations()
+        self.write_playlists()
 
-    def open_station(self, station_name):
+    def load_playlist(self, playlist_name):
 
-        if station_name not in self.stations:
-            logging.debug('No station called: {}'.format(station_name))
+        if playlist_name not in self.playlists:
+            logging.debug('No playlist called: {}'.format(playlist_name))
             return
 
-        try:
-            # clear the queue
-            sonos.clear_queue()
 
-            # add and kick off the first track
-            #sonos.add_uri_to_queue(artist['tracks'][0]['uri'])
-            #sonos.play_from_queue(0)
+        # clear the queue
+        self.sonos.clear_queue()
 
-            # add the rest of the tracks
-            #for item in artist['tracks'][1:]:
-            #    sonos.add_uri_to_queue(item['uri'])
-                
-        except:
-            print("Issue calling Sonos.")
+        # add and kick off the first track
+        self.sonos.add_uri_to_queue(self.playlists[playlist_name][0])
+        self.sonos.play_from_queue(0)
+
+        # add the rest of the tracks
+        for track in self.playlists[playlist_name][1:]:
+            self.sonos.add_uri_to_queue(track)
+            
