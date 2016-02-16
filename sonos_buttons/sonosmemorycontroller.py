@@ -82,7 +82,11 @@ class SonosMemoryController:
 
     def cancel_running_thread(self):
         if self.thread:
+            # send the stop signal, then wait until the thread
+            # closes
             self.thread.stop()
+            self.thread.join()
+            self.thread = None
 
 class PlaylistLoader(threading.Thread):
 
