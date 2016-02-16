@@ -1,6 +1,6 @@
 from buttons import *
 import parameters as params
-from sonosmemorycontroller import SonosMemoryController
+#from sonosmemorycontroller import SonosMemoryController
 import logging
 import time
 
@@ -15,7 +15,7 @@ BTN_4 = buttons.add('Button 4', 21)
 BTN_5 = buttons.add('Button 5', 24)
 BTN_6 = buttons.add('Button 6', 29)
 
-smc = SonosMemoryController()
+#smc = SonosMemoryController()
 
 def get_pressed_buttons():
 
