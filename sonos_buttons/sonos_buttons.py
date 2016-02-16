@@ -1,6 +1,7 @@
 from classes import *
 import parameters as params
 from sonosmemorycontroller import SonosMemoryController
+import time
 import logging
 
 # Set up the buttons. Make a button set and add buttons,
@@ -34,6 +35,9 @@ def monitor_buttons():
             # buttons are released
             while buttons.get_pressed_buttons():
                 pass
+
+            # extra sleep after buttons are released to avoid presses on button release
+            time.sleep(0.1)
 
 
 def trigger_action(button_event):

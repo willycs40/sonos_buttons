@@ -20,9 +20,12 @@ class ButtonList(list):
         return button
 
     def get_pressed_buttons(self):
+        '''Return the mask sum for all currently pressed buttons'''
+        
         return sum([button.mask for button in self if button.is_pressed()])
 
     def get_button_event(self):
+        '''Returns None if no buttons are pressed, or returns a ButtonEvent if buttons are pressed'''
 
         initial_buttons = self.get_pressed_buttons()
         if initial_buttons:
@@ -56,6 +59,11 @@ class Button():
         #GPIO.setup(self.pin_number, GPIO.IN)
 
     def is_pressed(self):
+        '''Return True if button is currently pressed'''
+
+        #return GPIO.input(self.pin_number)
+        
+        #Debugging stuff
         if self.pin_number in [17]:
             return True
         else:
@@ -85,12 +93,13 @@ class ButtonEvent():
         self.duration = duration
 
     def is_long_press(self):
-        if self.duration > params.LONG_PRESS_DURATION:
-            return True
-        else:
-            return False
+        '''Return True if the button press duration was longer than the LONG_PRESS_DURATION'''
+
+        return (self.duration > params.LONG_PRESS_DURATION)
 
     def is_button_pressed(self, button):
+        '''Return True if the event included this button''' 
+
         return bool(self.buttons & button.mask)
 
 class LEDList(list):
