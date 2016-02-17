@@ -1,8 +1,8 @@
 import parameters as params
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import time
 
-#GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BOARD)
 
 class ButtonList(list):
 
@@ -21,8 +21,12 @@ class ButtonList(list):
 
     def get_pressed_buttons(self):
         '''Return the mask sum for all currently pressed buttons'''
+        pressed_buttons = 0
+        for button in self:
+            if button.is_pressed():
+                pressed_buttons += button.mask
         
-        return sum([button.mask for button in self if button.is_pressed()])
+        return pressed_buttons
 
     def get_button_event(self):
         '''Returns None if no buttons are pressed, or returns a ButtonEvent if buttons are pressed'''
@@ -56,19 +60,13 @@ class Button():
         self.name = name
         self.pin_number = pin_number
         self.mask = mask
-        #GPIO.setup(self.pin_number, GPIO.IN)
+        GPIO.setup(self.pin_number, GPIO.IN)
 
     def is_pressed(self):
         '''Return True if button is currently pressed'''
 
-        #return GPIO.input(self.pin_number)
+        return GPIO.input(self.pin_number)
         
-        #Debugging stuff
-        if self.pin_number in [17]:
-            return True
-        else:
-            return False
-
     # Note that these magic functions allow us to use
     # the button's 'mask' value for == tests and + operations.
 
@@ -118,14 +116,14 @@ class LED():
         self.name = name
         self.pin_number = pin_number
         self._is_on = False
-        #GPIO.setup(self.pin_number, GPIO.OUT)
+        GPIO.setup(self.pin_number, GPIO.OUT)
     
     def turn_on(self):
-        #GPIO.output(self.pin_number,True)
+        GPIO.output(self.pin_number,True)
         self._is_on = True
     
     def turn_off(self):
-        #GPIO.output(self.pin_number, False)
+        GPIO.output(self.pin_number, False)
         self._is_on = False
 
     def is_on(self):
