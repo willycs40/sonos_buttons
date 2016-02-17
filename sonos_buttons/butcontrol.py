@@ -9,9 +9,7 @@ GPIO.setmode(GPIO.BOARD) # Use board pin numbering
 # Button class
 class but:
     def __init__(self, pin):
-        self.pin = pin
-        self.status = "OPEN"
-        GPIO.setup(self.pin, GPIO.IN) # set designated pin to input
+        GPIO.setup(pin, GPIO.IN) # set designated pin to input
     
     def get_button_status(self):
         if GPIO.input(self.pin):

@@ -8,19 +8,30 @@ import time
 # retaining handles to each one, for use later.
 buttons = ButtonList()
 
-BTN_1 = buttons.add('Button 1', 7)
+BTN_1 = buttons.add('Button 1', 11)
 BTN_2 = buttons.add('Button 2', 13)
-BTN_3 = buttons.add('Button 3', 17)
-BTN_4 = buttons.add('Button 4', 21)
-BTN_5 = buttons.add('Button 5', 24)
-BTN_6 = buttons.add('Button 6', 29)
+#BTN_3 = buttons.add('Button 3', 17)
+#BTN_4 = buttons.add('Button 4', 21)
+#BTN_5 = buttons.add('Button 5', 24)
+#BTN_6 = buttons.add('Button 6', 29)
 
 #smc = SonosMemoryController()
 
+#NICK COMMENT: required to return a value (can't return None) as comparative operators in get_button_event produce error.
+#i.e. initial_buttons > current_buttons doesn't work if current_buttons = None
 def get_pressed_buttons():
 
-    return sum([button.mask for button in buttons if gpio_test_pin(button.pin_number)])
+    #return sum([button.mask for button in buttons if gpio_test_pin(button.pin_number)])
+    
+    total = 0
+    #just writing this out long ways as easier to read
+    for button in buttons:
+        if button.status() == "CLOSED":
+            total += button.mask
+            
+    return total
 
+#not using this function atm
 def gpio_test_pin(pin_number):
     #raise NotImplementedError("Nick to implement this")
     if pin_number in [17]:
@@ -31,7 +42,7 @@ def gpio_test_pin(pin_number):
 def get_button_event():
 
     initial_buttons = get_pressed_buttons()
-    if initial_buttons:
+    if initial_buttons != 0:
 
         start_time = time.time()
 
@@ -40,7 +51,12 @@ def get_button_event():
             current_buttons = get_pressed_buttons()
             if initial_buttons > current_buttons:
                 # buttons were released, so return the event
-                return ButtonEvent(initial_buttons, duration)
+                #NICK COMMENT: can get error if duration isn't defined...
+                #...hard to reproduce, not sure what causes it. Have inserted exception to deal with it 
+                try:
+                    return ButtonEvent(initial_buttons, duration)
+                except UnboundLocalError:
+                    print ("Stop Button Mashing!")
             elif initial_buttons < current_buttons:
                 # more buttons pressed, so start again
                 return get_button_event()
@@ -56,6 +72,20 @@ def get_button_event():
 
 def trigger_action(button_event):
 
+    #NICK COMMENT: Just some code I was using to get button presses to print to screen
+    pressed_buttons = []
+    for button in buttons:
+        if button_event.is_button_pressed(button):
+            pressed_buttons.append(button)
+            
+    if len(pressed_buttons) == 1:
+        if BTN_1 in pressed_buttons:
+            print ("Button 1 pressed for",button_event.duration,"seconds")
+        elif BTN_2 in pressed_buttons:
+            print ("Button 2 pressed for",button_event.duration,"seconds")
+            
+    if len(pressed_buttons) == 2:
+        print ("Both buttons pressed for",button_event.duration,"seconds")
     # This is why we kept handles to the buttons earlier.
     # You can compare  pressed_buttons to the buttons, or 
     # sets of buttons. This will do bitwise matching against the buttons'
@@ -64,22 +94,22 @@ def trigger_action(button_event):
     # self.current_worker.stop()
     # self.current_worker.
 
-    smc.cancel_running_thread()
-
-    if button_event.buttons == BTN_3:
-        print('Button 3 pressed for {} seconds'.format(button_event.duration))
-        
-        if button_event.is_long_press():
-            smc.save_playlist('Beach')
-        else:
-            smc.load_playlist_threaded('Beach')
-
-    elif button_event.buttons == BTN_4 + BTN_6:
-        print('Buttons 4 and 6 pressed for {} seconds'.format(button_event.duration))
-    else:
-        print('Unknown button combination held for {} seconds.'.format(button_event.duration))
-        for button in buttons:
-            print('Button: {}. Pressed: {}.'.format(button.name, button_event.is_button_pressed(button)))
+#    smc.cancel_running_thread()
+#
+#    if button_event.buttons == BTN_3:
+#        print('Button 3 pressed for {} seconds'.format(button_event.duration))
+#        
+#        if button_event.is_long_press():
+#            smc.save_playlist('Beach')
+#        else:
+#            smc.load_playlist_threaded('Beach')
+#
+#    elif button_event.buttons == BTN_4 + BTN_6:
+#        print('Buttons 4 and 6 pressed for {} seconds'.format(button_event.duration))
+#    else:
+#        print('Unknown button combination held for {} seconds.'.format(button_event.duration))
+#        for button in buttons:
+#            print('Button: {}. Pressed: {}.'.format(button.name, button_event.is_button_pressed(button)))
 
 
 def monitor_buttons():
@@ -96,7 +126,7 @@ def monitor_buttons():
             # don't resume looping until all 
             # buttons are released
             while get_pressed_buttons():
-                pass
+                time.sleep(0.1)#NICK COMMENT: important, added to stop button flickering during release
 
 if __name__=='__main__':
 

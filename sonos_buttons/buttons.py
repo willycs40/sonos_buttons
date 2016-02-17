@@ -1,5 +1,8 @@
+# import modules
+import RPi.GPIO as GPIO
 import parameters as params
-import butcontrol
+
+GPIO.setmode(GPIO.BOARD) # Use board pin numbering
 
 class ButtonList(list):
 
@@ -22,7 +25,8 @@ class Button():
         self.name = name
         self.pin_number = pin_number
         self.mask = mask
-
+        self.gpio_link()
+        
     # Note that these magic functions allow us to use
     # the button's 'mask' value for == tests and + operations.
 
@@ -39,6 +43,18 @@ class Button():
 
     def __radd__(self, other):
         return self.__add__(other)
+    
+    #link code button to physical gpio pin
+    def gpio_link(self):
+        GPIO.setup(self.pin_number, GPIO.IN)
+    
+    #gives status of button in real world.
+    def status(self):
+        if GPIO.input(self.pin_number):#i.e. if closed
+            return "CLOSED"
+        else:
+            return "OPEN"
+            
 
 class ButtonEvent():
 
@@ -52,5 +68,6 @@ class ButtonEvent():
         else:
             return False
 
+    #Witchcraft
     def is_button_pressed(self, button):
         return bool(self.buttons & button.mask)
