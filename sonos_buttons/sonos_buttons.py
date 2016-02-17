@@ -40,24 +40,22 @@ def trigger_action(button_event):
     # mask values.
 
     # in case the smc still has a thread running from earlier, cancel it
-    smc.cancel_running_thread()
+    #smc.cancel_running_thread()
 
     # check for playlist button short and long presses
     playlist_buttons = [BTN_1, BTN_2]
     for playlist_button in playlist_buttons:
         if button_event.buttons == playlist_button:
+            logging.info('Button ({}) pressed for {} seconds. Long press: {}'.format(playlist_button.name, button_event.duration, str(button_event.is_long_press())))
             if button_event.is_long_press():
-                logging.info('Saving station current queue to playlist ({})'.format(button.name))
-                smc.save_playlist(playlist_button.name)
+                logging.info('Saving current queue to playlist ({})'.format(playlist_button.name))
+                #smc.save_playlist(playlist_button.name)
             else:
-                smc.load_playlist_threaded(playlist_button.name)
+                logging.info('Loading playlist ({})'.format(playlist_button.name))
+                #smc.load_playlist_threaded(playlist_button.name)
 
-    if button_event.buttons == BTN_4 + BTN_6:
-        print('Buttons 4 and 6 pressed for {} seconds'.format(button_event.duration))
-    else:
-        print('Unknown button combination held for {} seconds.'.format(button_event.duration))
-        for button in buttons:
-            print('Button: {}. Pressed: {}.'.format(button.name, button_event.is_button_pressed(button)))
+    if button_event.buttons == BTN_1 + BTN_2:
+        logging.info('Buttons 1 and 2 pressed for {} seconds. Long press: {}'.format(button_event.duration, str(button_event.is_long_press())))
 
 if __name__=='__main__':
 

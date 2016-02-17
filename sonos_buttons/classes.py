@@ -39,13 +39,13 @@ class ButtonList(list):
             while True:
 
                 current_buttons = self.get_pressed_buttons()
+		duration = time.time() - start_time
                 if initial_buttons > current_buttons:
                     # buttons were released, so return the event
                     return ButtonEvent(initial_buttons, duration)
                 elif initial_buttons < current_buttons:
                     # more buttons pressed, so start again
                     return self.get_button_event()
-                duration = time.time() - start_time
                 if duration > params.MAX_PRESS_DURATION:
                     # max duration exceeded, so return the event
                     return ButtonEvent(initial_buttons, duration)
