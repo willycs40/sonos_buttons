@@ -1,4 +1,5 @@
 import parameters as params
+import logging
 import RPi.GPIO as GPIO
 import time
 
@@ -119,15 +120,23 @@ class LED():
         GPIO.setup(self.pin_number, GPIO.OUT)
     
     def turn_on(self):
+        logging.info("LED '{}' turned on".format(self.name))
         GPIO.output(self.pin_number,True)
         self._is_on = True
     
     def turn_off(self):
+        logging.info("LED '{}' turned off".format(self.name))
         GPIO.output(self.pin_number, False)
         self._is_on = False
 
     def is_on(self):
         return self._is_on
+        
+    def toggle(self):
+        if self.is_on():
+            self.turn_off()
+        else:
+            self.turn_on()
 
     def flash(self, count=2, gap=0.1):
         if self.is_on():
