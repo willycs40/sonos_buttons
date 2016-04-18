@@ -39,7 +39,7 @@ class SonosMemoryController:
         tracks = []
         if queue is not None:            
             for track in queue:
-                tracks.append(track.resources[0].uri)
+                tracks.append(track.uri)
 
         self.playlists[playlist_name] = tracks
 
@@ -48,11 +48,12 @@ class SonosMemoryController:
     def load_playlist(self, playlist_name):
 
         if playlist_name not in self.playlists:
-            logging.debug('No playlist called: {}'.format(playlist_name))
+            logging.info('No playlist called: {}'.format(playlist_name))
             return
 
 
         # clear the queue
+        self.sonos.unjoin()
         self.sonos.clear_queue()
 
         # add and kick off the first track
@@ -74,7 +75,7 @@ class SonosMemoryController:
     def load_playlist_threaded(self, playlist_name):
 
         if playlist_name not in self.playlists:
-            logging.debug('No playlist called: {}'.format(playlist_name))
+            logging.info('No playlist called: {}'.format(playlist_name))
             return
 
         self.thread = PlaylistLoader(sonos=self.sonos, playlist=self.playlists[playlist_name])
